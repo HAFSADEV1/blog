@@ -28,6 +28,9 @@
                         <br>
 
                         <x-tags :tags="$post->tags"></x-tags>
+                        @if($post->image)
+                        <img src="{{$post->image->url()}}" alt="">
+                        @endif
                 </td>
                 <td>@if ($post->comments_count)
                     <p>{{$post->comments_count}} Comments</p>

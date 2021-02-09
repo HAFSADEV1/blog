@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePost;
+use App\Models\Image;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -70,9 +72,14 @@ class PostController extends Controller
     {
         $validateData = $request->validated();
         $validateData['user_id'] = $request->user()->id;
-        $Post = Post::create($validateData);
+        $post = Post::create($validateData);
+        if ($request->hasFile('picture')) {
+            $path = $request->file('picture')->store('posts');
+            $image = new Image(['path' => $path]);
+            $post->image()->save($image);
+        }
         $request->session()->flash('status', 'post created successfully');
-        return redirect()->route('posts.index');
+        return redirect()->route('posts.show', ['post' => $post->id]);
     }
 
     /**
